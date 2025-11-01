@@ -29,12 +29,17 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    # --- Prepare SonarCloud analysis ---
-    - task: SonarQubeAnalyze@7
+    - task: SonarQubePrepare@7
       inputs:
-        jdkversion: 'JAVA_HOME_17_X64'
+        SonarQube: 'SonarQube'
+        scannerMode: 'other'
+    - task: JavaToolInstaller@1
+      inputs:
+            versionSpec: '11'
+            jdkArchitectureOption: 'x64'
+            jdkSourceOption: 'PreInstalled'
     - task: Maven@4
-      displayName: 'Maven Package'
+      displayName: 'Maven MyWebApp/pom.xml'
       inputs:
         mavenPomFile: 'MyWebApp/pom.xml'
         mavenOptions: '-Xmx3072m'
@@ -43,7 +48,7 @@ stages:
         jdkArchitectureOption: 'x64'
         publishJUnitResults: true
         testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        goals: 'clean package'
+        goals: 'clean install sonar:sonar'
 
     - task: CopyFiles@2
       displayName: 'Copy Files to artifact staging directory'
