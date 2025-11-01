@@ -29,6 +29,10 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
+    # --- Prepare SonarCloud analysis ---
+    - task: SonarQubeAnalyze@7
+      inputs:
+        jdkversion: 'JAVA_HOME_17_X64'
     - task: Maven@4
       displayName: 'Maven Package'
       inputs:
